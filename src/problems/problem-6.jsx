@@ -10,27 +10,6 @@
  * - When you drop a piece on the board, it should snap to the nearest grid position, but only if it's within a
  *   configurable magnet radius.
  *
- * Suggested implementation steps:
- * 1. Represent the board as an 8×8 grid:
- *    - Use GRID_SIZE = 8 and TOTAL_SLOTS = GRID_SIZE * GRID_SIZE.
- *    - Compute a fixed BOARD_SIZE based on SLOT_SIZE, GAP, and PADDING.
- * 2. State:
- *    - Keep `slotIds` as an array of length TOTAL_SLOTS.
- *    - Each entry is either `null` (empty slot) or a piece id (0–3).
- *    - Initially, all `slotIds` are `null` (pieces are off‑grid in the jumble).
- * 3. Layout:
- *    - Render only the visual grid: 64 absolutely positioned slot divs with dashed borders.
- *    - Render each `PuzzlePiece` separately, using absolute positioning:
- *      - If its id is not in `slotIds`, use an off‑grid "jumble" position near the center.
- *      - If its id is in `slotIds`, center it over that slot's center.
- * 4. Drag & drop:
- *    - Handle `onDragOver` on the board container (preventDefault and set dropEffect).
- *    - Handle `onDrop` on the board container (NOT individual slots):
- *      - Read the dropped piece id from dataTransfer.
- *      - Compute the nearest slot center to the drop point.
- *      - If the distance is greater than `MAGNET_RADIUS`, do nothing.
- *      - Otherwise, update `slotIds` so the piece snaps into that slot (and optionally swap with any existing piece).
- *
  * Extra challenge:
  * - Expose `MAGNET_RADIUS` as a constant so you can experiment with "stronger" or "weaker" snapping behavior.
  */
