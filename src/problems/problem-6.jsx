@@ -68,7 +68,8 @@ function PuzzlePiece({ piece, position }) {
     <div
       draggable
       onDragStart={(e) => {
-        // Set the piece id on dataTransfer so the board can read it in onDrop.
+        // TODO: setData + effectAllowed
+        // TODO 1: store piece id for drag
         e.dataTransfer.setData("text/plain", String(piece.id));
         e.dataTransfer.effectAllowed = "move";
       }}
@@ -94,6 +95,7 @@ function Problem6() {
 
   // Basic drag-over handler for the whole board.
   const handleDragOver = (e) => {
+    // TODO 2: prevent default for drop
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
   };
@@ -106,7 +108,55 @@ function Problem6() {
   // 5. Otherwise, update slotIds using setSlotIds so that:
   //    - If the piece was off-grid, put it into that slot (and optionally clear any piece that was there).
   //    - If the piece was already on-grid, swap it with whatever is in the target slot.
-  const handleDropOnBoard = (e) => {};
+  const handleDropOnBoard = (e) => {
+    e.preventDefault();
+
+    // TODO 3: get pieceId
+    const pieceId = Number(e.dataTransfer.getData("text/plain"));
+
+    // TODO 3: get mouse position relative to board
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // TODO 4: find nearest slot center
+    let closestIndex = -1;
+    let minDist = Infinity;
+
+    SLOT_CENTERS.forEach((center, index) => {
+      const dx = center.left - x;
+      const dy = center.top - y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < minDist) {
+        minDist = dist;
+        closestIndex = index;
+      }
+    });
+
+    // TODO 4: check MAGNET_RADIUS
+    if (minDist > MAGNET_RADIUS) return;
+
+    // TODO 5: update state (place or swap)
+    setSlotIds((prev) => {
+      const next = [...prev];
+
+      const fromIndex = next.indexOf(pieceId);
+
+      if (fromIndex !== -1) {
+        // swap
+        [next[fromIndex], next[closestIndex]] = [
+          next[closestIndex],
+          next[fromIndex],
+        ];
+      } else {
+        // place piece
+        next[closestIndex] = pieceId;
+      }
+
+      return next;
+    });
+  };
 
   return (
     <section className="problem-view p-6">
